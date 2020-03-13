@@ -1,0 +1,28 @@
+- name: up green backend
+  docker_container:
+      name: green
+      image: nginx
+      ports:
+          - "8081:80"
+
+- name: up blue backend
+  docker_container:
+      name: blue
+      image: nginx
+      ports:
+          - "8082:80"
+
+- name: up red backend
+  docker_container:
+      name: red
+      image: nginx
+      ports:
+          - "8083:80"
+
+- name: copy files
+  become: true
+  become_user: admin
+  shell: |
+      docker cp data/green green:'{{ ngnx }}'
+      docker cp data/blue blue:'{{ ngnx }}'
+      docker cp data/red red:'{{ ngnx }}'

@@ -1,0 +1,34 @@
+# haproxy testlab
+
+- hosts: localhost
+  connection: local
+  become: yes
+  gather_facts: no
+  vars:
+    ngnx: /usr/share/nginx/html/index.html
+
+  tasks:
+      - name: run backend
+        include_tasks: run_backend.yml
+
+      - name: install haproxy
+        yum:
+            name: haproxy
+            state: present
+        notify: enable haproxy
+
+      - name: config haproxy
+        command: cp -f haproxy.cfg /etc/haproxy/
+        notify: restart haproxy
+
+  handlers:
+
+      - name: enable haproxy
+        systemd:
+            name: haproxy
+            enabled: yes
+
+      - name: restart haproxy
+        systemd:
+            name: haproxy
+            state: restarted      
